@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getGroups } from "../api/groupsApi";
 import { useNavigate } from "react-router-dom";
+import "./HomePage.css";
 
 interface Group {
   id: number;
@@ -23,13 +24,12 @@ export default function HomePage(currentUserId: { currentUserId: string }) {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">All Groups</h1>
-      <ul>
+      <ul className="list1">
         {groups.map((g) => (
           <li key={g.id} className="mb-2">
             <button
               onClick={() => navigate(`/groups/${g.id}`)}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
+              className="homeButton">
               {g.name}
             </button>
           </li>

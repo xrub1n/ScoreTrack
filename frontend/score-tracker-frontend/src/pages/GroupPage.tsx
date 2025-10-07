@@ -88,6 +88,7 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
       {/* Center Panel: Score Buttons */}
       <div style={{ flexGrow: 1 }}>
         <h2>{group.name}</h2>
+        <h3>{currentMember?.user.displayName}</h3>
         <h3>Your score: {currentMember?.totalScore}</h3>
         <div>
           {group.scoreButtons.map((b) => (
