@@ -36,4 +36,14 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    // POST: api/users
+    [HttpPost]
+    public async Task<ActionResult<ApplicationUser>> CreateUser(ApplicationUser user)
+    {
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        // Return the created user with a 201 status code by using GetUser{id}
+        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+    }
 }
