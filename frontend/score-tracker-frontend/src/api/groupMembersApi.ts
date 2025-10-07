@@ -15,3 +15,10 @@ export async function addScore(groupMemberId: number, points: number) {
   return res.json();
 }
 
+export async function getMembersForGroup(groupId: number) {
+  const res = await fetch(`${API_BASE}/groupmembers/group/${groupId}`);
+  if (!res.ok) throw new Error("Failed to fetch group members");
+  return res.json();
+}
+
+

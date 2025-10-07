@@ -26,6 +26,19 @@ namespace ScoreTrack.api.Controllers
                 .ToListAsync();
         }
 
+        // GET: api/groupmembers/group/{groupId}
+        [HttpGet("group/{groupId}")]
+        public async Task<ActionResult<IEnumerable<GroupMember>>> GetMembersForGroup(int groupId)
+        {
+            var members = await _context.GroupMembers
+                .Where(gm => gm.GroupId == groupId)
+                .Include(gm => gm.User)
+                .ToListAsync();
+
+            return Ok(members);
+        }
+
+
         // POST: api/groupmembers
         [HttpPost]
         public async Task<ActionResult<GroupMember>> AddMember([FromBody] GroupMember groupMember)
