@@ -13,7 +13,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();          
+builder.Services.AddSwaggerGen();
+
+// Add Cors so both local servers can communicate with each other
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // your React app’s address
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -69,6 +80,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("AllowFrontend");
 
 
 var summaries = new[]
