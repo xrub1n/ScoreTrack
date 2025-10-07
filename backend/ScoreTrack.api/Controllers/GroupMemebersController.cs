@@ -80,5 +80,28 @@ namespace ScoreTrack.api.Controllers
             return Ok(member);
         }
 
+        // PATCH: api/groupmembers/{groupMemberId}/addscore/button/{scoreButtonId}
+        [HttpPatch("{groupMemberId}/addscore/button/{scoreButtonId}")]
+        public async Task<IActionResult> AddScoreFromButton(int groupMemberId, int scoreButtonId)
+        {
+            var member = await _context.GroupMembers
+                .Include(gm => gm.User)
+                .Include(gm => gm.Group)
+                .FirstOrDefaultAsync(gm => gm.Id == groupMemberId);
+
+            if (member == null)
+                return NotFound("GroupMember not found.");
+
+            var button = await _context.ScoreButtons.FindAsync(scoreButtonId);
+            if (button == null)
+                return NotFound("ScoreButton not found.");
+
+            member.TotalScore += button.Points;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(member);
+        }
+
     }
 }
