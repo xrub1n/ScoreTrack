@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using ScoreTrack.api.Data;
 using ScoreTrack.api.Models;
 
+
+namespace ScoreTrack.api.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase

@@ -1,0 +1,62 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ScoreTrack.api.Data;
+using ScoreTrack.api.Models;
+
+namespace ScoreTrack.api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class GroupMembersController : ControllerBase
+    {
+        private readonly AppDbContext _context;
+
+        public GroupMembersController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: api/groupmembers
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<GroupMember>>> GetAll()
+        {
+            return await _context.GroupMembers
+                .Include(gm => gm.User)
+                .Include(gm => gm.Group)
+                .ToListAsync();
+        }
+
+        // POST: api/groupmembers
+        [HttpPost]
+        public async Task<ActionResult<GroupMember>> AddMember([FromBody] GroupMember groupMember)
+        {
+            // check if the user is already in the group
+            var existing = await _context.GroupMembers
+                .FirstOrDefaultAsync(gm => gm.GroupId == groupMember.GroupId && gm.UserId == groupMember.UserId);
+
+            if (existing != null)
+                return BadRequest("User is already a member of this group.");
+
+            _context.GroupMembers.Add(groupMember);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetAll), new { id = groupMember.Id }, groupMember);
+        }
+
+        // DELETE: api/groupmembers/{groupId}/{userId}
+        [HttpDelete("{groupId}/{userId}")]
+        public async Task<IActionResult> RemoveMember(int groupId, string userId)
+        {
+            var member = await _context.GroupMembers
+                .FirstOrDefaultAsync(gm => gm.GroupId == groupId && gm.UserId == userId);
+
+            if (member == null)
+                return NotFound("Membership not found.");
+
+            _context.GroupMembers.Remove(member);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+    }
+}
