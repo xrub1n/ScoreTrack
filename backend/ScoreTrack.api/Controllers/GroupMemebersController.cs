@@ -58,5 +58,27 @@ namespace ScoreTrack.api.Controllers
 
             return NoContent();
         }
+
+        // PATCH: api/groupmembers/{groupMemberId}/addscore
+        [HttpPatch("{groupMemberId}/addscore")]
+        public async Task<IActionResult> AddScore(int groupMemberId, [FromBody] int points)
+        {
+            // Find the GroupMember
+            var member = await _context.GroupMembers
+                .Include(gm => gm.User)
+                .Include(gm => gm.Group)
+                .FirstOrDefaultAsync(gm => gm.Id == groupMemberId);
+
+            if (member == null)
+                return NotFound("GroupMember not found.");
+
+            // Increment the score
+            member.TotalScore += points;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(member);
+        }
+
     }
 }
