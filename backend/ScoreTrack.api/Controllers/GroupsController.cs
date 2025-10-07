@@ -39,6 +39,19 @@ public class GroupsController : ControllerBase
         return Ok(group);
     }
 
+    // GET: api/groups/user/{userId}
+    [HttpGet("user/{userId}")]
+    public async Task<ActionResult<IEnumerable<Group>>> GetGroupsForUser(string userId)
+    {
+        var groups = await _context.GroupMembers
+            .Where(gm => gm.UserId == userId)
+            .Select(gm => gm.Group)   // Only return the Group objects
+            .ToListAsync();
+
+        return Ok(groups);
+    }
+
+
 
     [HttpPost]
     public async Task<ActionResult<Group>> CreateGroup(Group group)

@@ -12,6 +12,12 @@ export async function getGroupById(id: number) {
   return res.json();
 }
 
+export async function getGroupByUserId(userId: string) {
+  const res = await fetch(`${API_BASE}/groups/${UserId}`);
+  if (!res.ok) throw new Error("Failed to fetch group");
+  return res.json();
+}
+
 export async function createGroup(data: { name: string }) {
   const res = await fetch(`${API_BASE}/groups`, {
     method: "POST",
