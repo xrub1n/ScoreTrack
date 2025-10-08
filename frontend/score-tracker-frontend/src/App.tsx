@@ -4,7 +4,7 @@ import HomePage from "./pages/HomePage";
 import GroupPage from "./pages/GroupPage";
 
 function App() {
-  const currentId = "3F1CFBBE-EAF3-4BB6-9F45-0D66943669EE" ;
+  const currentId = "7A7CBA13-0371-4973-8FCA-AAFA6BE084B9" ;
 
   return (
     <div>

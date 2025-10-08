@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getGroups } from "../api/groupsApi";
+import { createGroup, getGroups } from "../api/groupsApi";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
 
@@ -11,6 +11,7 @@ interface Group {
 export default function HomePage(currentUserId: { currentUserId: string }) {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newGroupName, setNewGroupName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,14 +20,37 @@ export default function HomePage(currentUserId: { currentUserId: string }) {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleCreateGroup = async () => {
+    if (!newGroupName.trim()) return alert("Please enter a group name.");
+    try {
+      const group = await createGroup({ name: newGroupName, creatorId: currentUserId.currentUserId });
+      navigate(`/groups/${group.id}`); // Navigate to the new group's page
+    } catch (err) {
+      alert("Failed to create group.");
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">All Groups</h1>
+    <div>
+      <h1>All Groups</h1>
+
+      <div className="mb-6">
+        <input
+          value={newGroupName}
+          onChange={(e) => setNewGroupName(e.target.value)}
+          placeholder="Enter new group name"
+          />
+        <button
+          onClick={handleCreateGroup}>Create Group
+        </button>
+      </div>
+
+      
       <ul className="list1">
         {groups.map((g) => (
-          <li key={g.id} className="mb-2">
+          <li key={g.id} >
             <button
               onClick={() => navigate(`/groups/${g.id}`)}
               className="homeButton">

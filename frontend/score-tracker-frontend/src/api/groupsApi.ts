@@ -18,7 +18,7 @@ export async function getGroupByUserId(userId: string) {
   return res.json();
 }
 
-export async function createGroup(data: { name: string }) {
+export async function createGroup(data: { name: string, creatorId: string }) {
   const res = await fetch(`${API_BASE}/groups`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

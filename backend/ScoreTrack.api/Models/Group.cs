@@ -12,5 +12,6 @@ namespace ScoreTrack.api.Models
         public ICollection<GroupMember>? Members { get; set; }
         public ICollection<ScoreButton> ScoreButtons { get; set; } = new List<ScoreButton>();
 
+        
     }
 }
