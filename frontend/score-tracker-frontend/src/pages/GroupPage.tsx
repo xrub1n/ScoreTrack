@@ -21,6 +21,7 @@ interface ScoreButton {
 }
 
 interface Group {
+  passcode: string;
   id: number;
   name: string;
   scoreButtons: ScoreButton[];
@@ -75,6 +76,7 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
 
   return (
     <div style={{ display: "flex" }}>
+      <p>Passcode: <strong>{group.passcode}</strong></p>
       {/* Left Panel: Members */}
       <div style={{ width: "200px", marginRight: "20px" }}>
         <h3>Members</h3>

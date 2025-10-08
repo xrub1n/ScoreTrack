@@ -13,17 +13,28 @@ export async function getGroupById(id: number) {
 }
 
 export async function getGroupByUserId(userId: string) {
-  const res = await fetch(`${API_BASE}/groups/users/${userId}`);
+  const res = await fetch(`${API_BASE}/groups/user/${userId}`);
   if (!res.ok) throw new Error("Failed to fetch groups");
   return res.json();
 }
 
-export async function createGroup(data: { name: string, creatorId: string }) {
+export async function createGroup(name: string, creatorId: string) {
   const res = await fetch(`${API_BASE}/groups`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: JSON.stringify({name, creatorId}),
   });
   if (!res.ok) throw new Error("Failed to create group");
   return res.json();
 }
+
+export async function joinGroup(passcode: string, userId: string) {
+  const res = await fetch(`${API_BASE}/groups/join`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ passcode, userId }),
+  });
+  if (!res.ok) throw new Error("Failed to join group");
+  return res.json();
+}
+

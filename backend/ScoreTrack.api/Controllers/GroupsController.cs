@@ -4,6 +4,7 @@ using ScoreTrack.api.Data;
 using ScoreTrack.api.Models;
 
 namespace ScoreTrack.api.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
 public class GroupsController : ControllerBase
@@ -84,5 +85,36 @@ public class GroupsController : ControllerBase
 
         return CreatedAtAction(nameof(GetGroups), new { id = group.Id }, group);
     }
+    
+    // POST: api/groups/join
+    [HttpPost("join")]
+    public async Task<IActionResult> JoinGroupByPasscode([FromBody] JoinGroupRequest request)
+    {
+        var group = await _context.Groups
+            .FirstOrDefaultAsync(g => g.Passcode == request.Passcode);
+
+        if (group == null)
+            return NotFound("Invalid passcode.");
+
+        // Check if user is already a member
+        var existingMember = await _context.GroupMembers
+            .FirstOrDefaultAsync(gm => gm.GroupId == group.Id && gm.UserId == request.UserId);
+
+        if (existingMember != null)
+            return BadRequest("User is already a member.");
+
+        var member = new GroupMember { GroupId = group.Id, UserId = request.UserId, TotalScore = 0 };
+        _context.GroupMembers.Add(member);
+        await _context.SaveChangesAsync();
+
+        return Ok(member);
+    }
+
+    public class JoinGroupRequest
+    {
+        public string UserId { get; set; } = null!;
+        public string Passcode { get; set; } = null!;
+    }
+
 
 }

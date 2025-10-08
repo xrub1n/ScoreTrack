@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { createGroup, getGroups } from "../api/groupsApi";
+import { createGroup, getGroups, getGroupByUserId } from "../api/groupsApi";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
+import JoinGroupForm from "../components/JoinGroupForm";
 
 interface Group {
   id: number;
@@ -15,7 +16,7 @@ export default function HomePage(currentUserId: { currentUserId: string }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getGroups()
+    getGroupByUserId(currentUserId.currentUserId)
       .then((data) => setGroups(data))
       .finally(() => setLoading(false));
   }, []);
@@ -23,7 +24,7 @@ export default function HomePage(currentUserId: { currentUserId: string }) {
   const handleCreateGroup = async () => {
     if (!newGroupName.trim()) return alert("Please enter a group name.");
     try {
-      const group = await createGroup({ name: newGroupName, creatorId: currentUserId.currentUserId });
+      const group = await createGroup(newGroupName, currentUserId.currentUserId );
       navigate(`/groups/${group.id}`); // Navigate to the new group's page
     } catch (err) {
       alert("Failed to create group.");
@@ -46,6 +47,9 @@ export default function HomePage(currentUserId: { currentUserId: string }) {
           onClick={handleCreateGroup}>Create Group
         </button>
       </div>
+
+      {/* Join Group Form */}
+      <JoinGroupForm currentUserId={currentUserId.currentUserId} />
 
       
       <ul className="list1">
