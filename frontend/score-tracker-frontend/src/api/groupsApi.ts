@@ -18,7 +18,17 @@ export async function getGroupByUserId(userId: string) {
   return res.json();
 }
 
-export async function createGroup(name: string, creatorId: string) {
+export async function createGroup(name: string, creatorId: string, password: string) {
+  const res = await fetch(`${API_BASE}/groups`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({name, creatorId, password}),
+  });
+  if (!res.ok) throw new Error("Failed to create group");
+  return res.json();
+}
+
+export async function createGroupNoPassword(name: string, creatorId: string) {
   const res = await fetch(`${API_BASE}/groups`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

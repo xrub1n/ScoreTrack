@@ -76,7 +76,7 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
 
   return (
     <div style={{ display: "flex" }}>
-      <p>Passcode: <strong>{group.passcode}</strong></p>
+      
       {/* Left Panel: Members */}
       <div style={{ width: "200px", marginRight: "20px" }}>
         <h3>Members</h3>
@@ -90,6 +90,9 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
       {/* Center Panel: Score Buttons */}
       <div style={{ flexGrow: 1 }}>
         <h2>{group.name}</h2>
+        <p>Passcode: <strong>{group.passcode}</strong></p>
+
+
         <h3>{currentMember?.user.displayName}</h3>
         <h3>Your score: {currentMember?.totalScore}</h3>
         <div>
