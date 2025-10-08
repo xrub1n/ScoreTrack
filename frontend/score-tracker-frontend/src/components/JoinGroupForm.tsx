@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { joinGroup } from "../api/groupsApi";
+import { useNavigate } from "react-router-dom";
 
 export default function JoinGroupForm({ currentUserId }: { currentUserId: string }) {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const handleJoin = async () => {
     try {
       setError("");
       setSuccess("");
-      await joinGroup(passcode, currentUserId);
+      const group = await joinGroup(passcode, currentUserId);
       setSuccess("Joined group successfully!");
+      window.location.reload();
       setPasscode("");
     } catch (err: any) {
       setError(err.message);
@@ -19,19 +22,16 @@ export default function JoinGroupForm({ currentUserId }: { currentUserId: string
   };
 
   return (
-    <div className="mb-4">
+    <div>
       <input
         type="text"
         value={passcode}
         onChange={(e) => setPasscode(e.target.value)}
         placeholder="Enter group passcode"
-        className="border p-2 mr-2"
       />
-      <button onClick={handleJoin} className="px-4 py-2 bg-green-500 text-white rounded">
+      <button onClick={handleJoin}>
         Join Group
       </button>
-      {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">{success}</p>}
     </div>
   );
 }

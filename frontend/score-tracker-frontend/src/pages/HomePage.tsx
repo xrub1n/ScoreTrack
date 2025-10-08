@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createGroup, getGroups, getGroupByUserId } from "../api/groupsApi";
+import { createGroup, getGroupByUserId } from "../api/groupsApi";
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css";
 import JoinGroupForm from "../components/JoinGroupForm";
