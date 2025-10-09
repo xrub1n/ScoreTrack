@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getGroupById } from "../api/groupsApi";
+import { createScoreButton } from "../api/scorebuttonsApi";
 import { addScore, getMembersForGroup } from "../api/groupMembersApi";
 
 interface User {
@@ -24,29 +25,33 @@ interface Group {
   passcode: string;
   id: number;
   name: string;
+  creatorId: string;
   scoreButtons: ScoreButton[];
 }
 
 export default function GroupPage(currentUserId: { currentUserId: string }) {
-  const { id } = useParams(); // group ID from URL
+  const { id } = useParams(); // gets group ud from url
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [currentMember, setCurrentMember] = useState<GroupMember | null>(null);
+  const [newButtonLabel, setNewButtonLabel] = useState("");
+  const [newButtonPoints, setNewButtonPoints] = useState<number>(0);
 
   const myUserId = currentUserId.currentUserId; // Hardcoded test user ID
+
+  const fetchGroupData = async () => {
+    const groupData = await getGroupById(Number(id));
+    setGroup(groupData);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch group info (score buttons)
-        const groupData = await getGroupById(Number(id));
-        setGroup(groupData);
+        await fetchGroupData();
 
-        // Fetch members of this group
         const membersData = await getMembersForGroup(Number(id));
         setMembers(membersData);
 
-        // Set current user's GroupMember object
         const me = membersData.find((m: GroupMember) => m.user.id === myUserId);
         setCurrentMember(me || null);
       } catch (err) {
@@ -60,11 +65,9 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
     if (!currentMember) return;
 
     try {
-      // Increment current user's score
       const updatedMember = await addScore(currentMember.id, points);
       setCurrentMember(updatedMember);
 
-      // Refresh all members to update displayed scores
       const refreshedMembers = await getMembersForGroup(Number(id));
       setMembers(refreshedMembers);
     } catch (err) {
@@ -72,7 +75,28 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
     }
   };
 
+  const handleAddButton = async () => {
+    if (!group) return;
+    if (!newButtonLabel || newButtonPoints === 0) return;
+
+    try {
+      await createScoreButton({
+        label: newButtonLabel,
+        points: newButtonPoints,
+        groupId: group.id,
+      });
+
+      await fetchGroupData();
+      setNewButtonLabel("");
+      setNewButtonPoints(0);
+    } catch (err) {
+      console.error("Failed to add button:", err);
+    }
+  };
+
   if (!group) return <div>Loading group...</div>;
+
+  const isCreator = group.creatorId === myUserId;
 
   return (
     <div style={{ display: "flex" }}>
@@ -90,11 +114,13 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
       {/* Center Panel: Score Buttons */}
       <div style={{ flexGrow: 1 }}>
         <h2>{group.name}</h2>
-        <p>Passcode: <strong>{group.passcode}</strong></p>
-
+        <p>
+          Passcode: <strong>{group.passcode}</strong>
+        </p>
 
         <h3>{currentMember?.user.displayName}</h3>
         <h3>Your score: {currentMember?.totalScore}</h3>
+
         <div>
           {group.scoreButtons.map((b) => (
             <button
@@ -106,6 +132,30 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
             </button>
           ))}
         </div>
+
+        {/* Creator-only section */}
+        {isCreator && (
+          <div style={{ marginTop: "20px", borderTop: "1px solid #ccc", paddingTop: "10px" }}>
+            <h4>Add New Button</h4>
+            <input
+              type="text"
+              placeholder="Label"
+              value={newButtonLabel}
+              onChange={(e) => setNewButtonLabel(e.target.value)}
+              style={{ marginRight: "10px", padding: "5px" }}
+            />
+            <input
+              type="number"
+              placeholder="Points"
+              value={newButtonPoints}
+              onChange={(e) => setNewButtonPoints(Number(e.target.value))}
+              style={{ marginRight: "10px", padding: "5px", width: "80px" }}
+            />
+            <button onClick={handleAddButton} style={{ padding: "5px 10px" }}>
+              Add
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
