@@ -127,9 +127,36 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
           buttons={group.scoreButtons}
           isCreator={isCreator}
           onClick={handleButtonClick}
-          onDelete={isCreator ? handleDeleteButton : undefined}
+          onDelete={handleDeleteButton}
         />
       </div>
+
+      {/* Add New Button (creator only) */}
+        {/* Creator-only section */}
+        {isCreator && (
+          <div style={{ marginTop: "20px", borderTop: "1px solid #ccc", paddingTop: "10px" }}>
+            <h4>Add New Button</h4>
+            <input
+              type="text"
+              placeholder="Label"
+              value={newButtonLabel}
+              onChange={(e) => setNewButtonLabel(e.target.value)}
+              style={{ marginRight: "10px", padding: "5px" }}
+            />
+            <input
+              type="number"
+              placeholder="Points"
+              value={newButtonPoints}
+              onChange={(e) => setNewButtonPoints(Number(e.target.value))}
+              style={{ marginRight: "10px", padding: "5px", width: "80px" }}
+            />
+            <button onClick={handleAddButton} style={{ padding: "5px 10px" }}>
+              Add
+            </button>
+          </div>
+        )}
     </div>
+
+    
   );
 }
