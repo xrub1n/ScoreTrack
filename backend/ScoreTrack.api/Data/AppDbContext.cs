@@ -46,6 +46,13 @@ namespace ScoreTrack.api.Data
                 .WithMany(g => g.ScoreButtons)
                 .HasForeignKey(sb => sb.GroupId)
                 .OnDelete(DeleteBehavior.Cascade); // Deleting group deletes buttons
+            
+            // Ensure Passcode is unique
+            builder.Entity<Group>()
+                .HasIndex(g => g.Passcode)
+                .IsUnique();
         }
     }
+
+    
 }

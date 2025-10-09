@@ -12,6 +12,6 @@ namespace ScoreTrack.api.Models
         public ICollection<GroupMember>? Members { get; set; }
         public ICollection<ScoreButton> ScoreButtons { get; set; } = new List<ScoreButton>();
 
-        public string Passcode { get; set; } = Guid.NewGuid().ToString("N").Substring(0, 6);
+        public string? Passcode { get; set; } = null!;
     }
 }

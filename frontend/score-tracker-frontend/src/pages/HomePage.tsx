@@ -13,7 +13,6 @@ export default function HomePage(currentUserId: { currentUserId: string }) {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [newGroupName, setNewGroupName] = useState("");
-  const [newGroupPassword, setNewGroupPassword] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export default function HomePage(currentUserId: { currentUserId: string }) {
   const handleCreateGroup = async () => {
     if (!newGroupName.trim()) return alert("Please enter a group name.");
     try {
-      const group = await createGroup(newGroupName, currentUserId.currentUserId, newGroupPassword);
+      const group = await createGroup(newGroupName, currentUserId.currentUserId);
       navigate(`/groups/${group.id}`); // Navigate to the new group's page
     } catch (err) {
       alert("Failed to create group.");
@@ -43,11 +42,6 @@ export default function HomePage(currentUserId: { currentUserId: string }) {
           value={newGroupName}
           onChange={(e) => setNewGroupName(e.target.value)}
           placeholder="Enter new group name"
-          />
-        <input
-          value={newGroupPassword}
-          onChange={(e) => setNewGroupPassword(e.target.value)}
-          placeholder="Enter a password for your new group"
           />
         <button
           onClick={handleCreateGroup}>Create Group

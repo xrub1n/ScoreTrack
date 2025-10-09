@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScoreTrack.api.Data;
 
@@ -11,9 +12,11 @@ using ScoreTrack.api.Data;
 namespace ScoreTrack.api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251008235733_AddUniquePasscodeToGroups")]
+    partial class AddUniquePasscodeToGroups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,6 +247,7 @@ namespace ScoreTrack.api.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Passcode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -251,8 +255,7 @@ namespace ScoreTrack.api.Migrations
                     b.HasIndex("CreatorId");
 
                     b.HasIndex("Passcode")
-                        .IsUnique()
-                        .HasFilter("[Passcode] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Groups");
                 });

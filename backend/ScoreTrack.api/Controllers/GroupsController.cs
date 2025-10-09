@@ -69,6 +69,10 @@ public class GroupsController : ControllerBase
         group.Members = new List<GroupMember>();
         group.ScoreButtons = new List<ScoreButton>();
 
+        // Generate a unique passcode for the group
+        var passcode = await GenerateUniquePasscodeAsync();
+        group.Passcode = passcode;
+
         _context.Groups.Add(group);
 
         // Also add the creator as a member of their own group automatically
@@ -85,7 +89,7 @@ public class GroupsController : ControllerBase
 
         return CreatedAtAction(nameof(GetGroups), new { id = group.Id }, group);
     }
-    
+
     // POST: api/groups/join
     [HttpPost("join")]
     public async Task<IActionResult> JoinGroupByPasscode([FromBody] JoinGroupRequest request)
@@ -116,5 +120,24 @@ public class GroupsController : ControllerBase
         public string Passcode { get; set; } = null!;
     }
 
+    private async Task<string> GenerateUniquePasscodeAsync()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        var random = new Random();
+
+        string code;
+        bool exists;
+
+        do
+        {
+            code = new string(Enumerable.Repeat(chars, 6)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            exists = await _context.Groups.AnyAsync(g => g.Passcode == code);
+        } while (exists);
+
+        return code;
+    }
+    
 
 }
