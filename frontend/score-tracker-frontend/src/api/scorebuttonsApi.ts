@@ -10,6 +10,15 @@ export async function createScoreButton(button: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(button),
   });
+
   if (!response.ok) throw new Error("Failed to create button");
   return response.json();
+}
+
+
+export async function deleteScoreButton(buttonId: number) {
+  const res = await fetch(`${API_BASE}/scorebuttons/${buttonId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete score button");
 }

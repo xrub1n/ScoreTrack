@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getGroupById } from "../api/groupsApi";
-import { createScoreButton } from "../api/scorebuttonsApi";
+import { createScoreButton, deleteScoreButton } from "../api/scorebuttonsApi";
 import { addScore, getMembersForGroup } from "../api/groupMembersApi";
+import GroupButtons from "../components/ScoreButtons";
+import UserList from "../components/UserList";
 
 interface User {
   id: string;
@@ -94,68 +96,39 @@ export default function GroupPage(currentUserId: { currentUserId: string }) {
     }
   };
 
+  const handleDeleteButton = async (buttonId: number) => {
+    if (!group) return;
+    try {
+      await deleteScoreButton(buttonId);
+      // Refresh group data to reflect deletion
+      const updatedGroup = await getGroupById(group.id);
+      setGroup(updatedGroup);
+    } catch (err) {
+      console.error("Failed to delete button:", err);
+    }
+  };
+
   if (!group) return <div>Loading group...</div>;
 
   const isCreator = group.creatorId === myUserId;
 
   return (
-    <div style={{ display: "flex" }}>
+    <div>
       
-      {/* Left Panel: Members */}
-      <div style={{ width: "200px", marginRight: "20px" }}>
-        <h3>Members</h3>
-        {members.map((m) => (
-          <div key={m.id}>
-            {m.user.displayName}: {m.totalScore}
-          </div>
-        ))}
-      </div>
-
-      {/* Center Panel: Score Buttons */}
+      <UserList members={members} />
       <div style={{ flexGrow: 1 }}>
         <h2>{group.name}</h2>
-        <p>
-          Passcode: <strong>{group.passcode}</strong>
-        </p>
+        <p>Passcode: <strong>{group.passcode}</strong></p>
 
         <h3>{currentMember?.user.displayName}</h3>
         <h3>Your score: {currentMember?.totalScore}</h3>
 
-        <div>
-          {group.scoreButtons.map((b) => (
-            <button
-              key={b.id}
-              onClick={() => handleButtonClick(b.points)}
-              style={{ margin: "5px", padding: "10px" }}
-            >
-              {b.label} (+{b.points})
-            </button>
-          ))}
-        </div>
-
-        {/* Creator-only section */}
-        {isCreator && (
-          <div style={{ marginTop: "20px", borderTop: "1px solid #ccc", paddingTop: "10px" }}>
-            <h4>Add New Button</h4>
-            <input
-              type="text"
-              placeholder="Label"
-              value={newButtonLabel}
-              onChange={(e) => setNewButtonLabel(e.target.value)}
-              style={{ marginRight: "10px", padding: "5px" }}
-            />
-            <input
-              type="number"
-              placeholder="Points"
-              value={newButtonPoints}
-              onChange={(e) => setNewButtonPoints(Number(e.target.value))}
-              style={{ marginRight: "10px", padding: "5px", width: "80px" }}
-            />
-            <button onClick={handleAddButton} style={{ padding: "5px 10px" }}>
-              Add
-            </button>
-          </div>
-        )}
+        <GroupButtons
+          buttons={group.scoreButtons}
+          isCreator={isCreator}
+          onClick={handleButtonClick}
+          onDelete={isCreator ? handleDeleteButton : undefined}
+        />
       </div>
     </div>
   );
